@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36603.0 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rads-api", "rads-api.csproj", "{3F03B1D7-D9A7-4D2D-A398-92940649561C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3F03B1D7-D9A7-4D2D-A398-92940649561C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F03B1D7-D9A7-4D2D-A398-92940649561C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F03B1D7-D9A7-4D2D-A398-92940649561C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F03B1D7-D9A7-4D2D-A398-92940649561C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BB10DBF1-1AD3-4733-8E9E-39694E8A259D}
+	EndGlobalSection
+EndGlobal
