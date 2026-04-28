@@ -1,0 +1,176 @@
+generator client {
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "debian-openssl-1.1.x"]
+  previewFeatures = ["interactiveTransactions"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  uid             String          @unique
+  firstName       String
+  lastName        String
+  email           String
+  rads            Float           @default(0)
+  role            String?         @default("user")
+  image           String          @default("")
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  notifications   Notification[]
+  userCommunities UserCommunity[]
+  invitesSent     Invite[]        @relation("invites_sent")
+  invitesReceived Invite[]        @relation("invites_received")
+  feedback        Feedback[]
+  userDevices     UserDevice[]
+
+  @@map("Users")
+}
+
+model Community {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  name        String
+  description String
+  image       String
+  total       Int             @default(1)
+  members     UserCommunity[]
+  invite      Invite[]
+  cycle       Cycle[]
+
+  @@map("Communities")
+}
+
+model Talk {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  date        DateTime?
+  description String?
+  drank       Boolean       @default(false)
+  senderId    String        @db.ObjectId
+  sender      UserCommunity @relation("talkSent", fields: [senderId], references: [id])
+  receiverId  String        @db.ObjectId
+  receiver    UserCommunity @relation("talkReceived", fields: [receiverId], references: [id])
+
+  @@map("Talks")
+}
+
+model UserCommunity {
+  id                   String        @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  userId               String        @db.ObjectId
+  user                 User          @relation(fields: [userId], references: [id])
+  communityId          String        @db.ObjectId
+  community            Community     @relation(fields: [communityId], references: [id])
+  rads                 Float         @default(0)
+  active               Boolean       @default(true)
+  feedback             Feedback[]
+  talksSent            Talk[]        @relation("talkSent")
+  talksReceived        Talk[]        @relation("talkReceived")
+  radsSent             Rad[]         @relation("radsSent")
+  radsReceived         Rad[]         @relation("radsReceived")
+  recognitionsSent     Recognition[] @relation("recognitionSent")
+  recognitionsReceived Recognition[] @relation("recognitionReceived")
+
+  @@map("UserCommunities")
+}
+
+model Cycle {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  closed      Boolean   @default(false)
+  startDate   DateTime
+  endDate     DateTime
+  rads        Int
+  duration    Int
+  status      Int
+  communityId String    @db.ObjectId
+  community   Community @relation(fields: [communityId], references: [id])
+
+  @@map("Cycles")
+}
+
+model Rad {
+  id         String        @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  rads       Int
+  senderId   String        @db.ObjectId
+  sender     UserCommunity @relation("radsSent", fields: [senderId], references: [id])
+  receiverId String        @db.ObjectId
+  receiver   UserCommunity @relation("radsReceived", fields: [receiverId], references: [id])
+  sent       Boolean       @default(false)
+
+  @@map("Rads")
+}
+
+model Notification {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  description String
+  createdAt   DateTime @default(now())
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  read        Boolean
+  parameters  String
+  type        Int
+
+  @@map("Notifications")
+}
+
+model Recognition {
+  id         String        @id @default(auto()) @map("_id") @db.ObjectId
+  note       String
+  createdAt  DateTime      @default(now())
+  emotion    Int
+  senderId   String        @db.ObjectId
+  sender     UserCommunity @relation("recognitionSent", fields: [senderId], references: [id])
+  receiverId String        @db.ObjectId
+  receiver   UserCommunity @relation("recognitionReceived", fields: [receiverId], references: [id])
+
+  @@map("Recognitions")
+}
+
+model Invite {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime  @default(now())
+  code        String
+  inviterId   String    @db.ObjectId
+  inviter     User      @relation("invites_sent", fields: [inviterId], references: [id])
+  inviteeId   String    @db.ObjectId
+  invitee     User      @relation("invites_received", fields: [inviteeId], references: [id])
+  communityId String    @db.ObjectId
+  community   Community @relation(fields: [communityId], references: [id])
+  joined      Boolean   @default(false)
+
+  @@map("Invites")
+}
+
+model Feedback {
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt       DateTime       @default(now())
+  description     String
+  userId          String         @db.ObjectId
+  user            User           @relation(fields: [userId], references: [id])
+  report          Boolean
+  userCommunityId String?        @db.ObjectId
+  userCommunity   UserCommunity? @relation(fields: [userCommunityId], references: [id])
+}
+
+model UserDevice {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  fcmToken  String
+  deviceId  String   @unique
+
+  @@map("UserDevices")
+}
